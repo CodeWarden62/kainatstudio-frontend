@@ -1,74 +1,58 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { IServiceModel, ServicePropNames, dummyServices } from '../services.model';
-import { RouterModule } from '@angular/router';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ServicesService } from '../services.service';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { TypeSafeMatCellDef } from '../../../../directives/type-safe-mate-cell-def.directive';
+import { Router, RouterLink } from '@angular/router';
+import { MatButton } from '@angular/material/button';
+import { IServiceModel } from '../services.model';
+import { ModalService } from '../../../../services/modal.service';
 
-enum EServiceTableColumns {
-  Name = ServicePropNames.Name,
-  Description = ServicePropNames.Description,
-  PriceRange = 'PriceRange',
-  SortOrder = ServicePropNames.SortOrder,
-  ActiveFlag = ServicePropNames.ActiveFlag,
-  Edit = 'Edit',
-  Delete = 'Delete',
-}
 @Component({
   selector: 'app-services-view',
   standalone: true,
-  imports: [
-    MatTableModule,
-    MatSortModule,
-    MatButtonModule,
-    MatIcon,
-    MatPaginator,
-    RouterModule,
-    MatButton,
-    MatSlideToggle,
-    TypeSafeMatCellDef
-  ],
+  imports: [RouterLink, MatButton, MatTableModule, MatSortModule],
   templateUrl: './services-view.component.html',
-  styleUrl: './services-view.component.scss',
+  styleUrls: ['./services-view.component.scss']
 })
-export class ServicesViewComponent implements AfterViewInit,OnInit {
-  dataSource: MatTableDataSource<IServiceModel>;
-  displayedColumns: string[] =[
-    EServiceTableColumns.Name,
-    EServiceTableColumns.Description,
-    EServiceTableColumns.PriceRange,
-    EServiceTableColumns.SortOrder,
-    EServiceTableColumns.ActiveFlag,
-    EServiceTableColumns.Edit,
-    EServiceTableColumns.Delete,
-  ]
-  ServiceTableColumns=EServiceTableColumns;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+export class ServicesViewComponent implements OnInit {
+  displayedColumns: string[] = ['id', 'name', 'priceRange', 'sortOrder', 'edit', 'delete'];
+  dataSource!: MatTableDataSource<IServiceModel>;
+  services:IServiceModel[]=[];
   @ViewChild(MatSort) sort!: MatSort;
-  ServicePropNames = ServicePropNames;
-  constructor(
-    private servicesService: ServicesService,
-  ){
-    this.dataSource = new MatTableDataSource(this.servicesService.services);
-  }
+
+  constructor(private servicesService: ServicesService, private router:Router, private modalService:ModalService) {}
+
   ngOnInit(): void {
-    this.servicesService.getServices().subscribe(res=>{
-      this.dataSource = new MatTableDataSource(this.servicesService.services);
+    this.fetchServicesAndInitializeTable();
+  }
+  fetchServicesAndInitializeTable(): void {
+    this.servicesService.getServices().subscribe(services => {
+      this.services = services;
+      this.dataSource = new MatTableDataSource(this.services);
+      this.dataSource.sort = this.sort;
+      this.dataSource.sortingDataAccessor = (item:IServiceModel, property ) => {
+        switch(property) {
+          case 'id': return item.Id;
+          case 'name': return item.Name;
+          case 'priceRange': return item.MinPrice;
+          case 'sortOrder': return item.SortOrder;
+          default: return 0;
+        }
+      };
     });
   }
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    console.log(this.servicesService.services);
+
+
+  editService(id: number): void {
+    // Implement edit service logic
+    this.router.navigate(['./edit/',id]);
   }
-  handleDelete(serviceId:number){
-    this.servicesService.deleteService(serviceId);
-    this.dataSource = new MatTableDataSource(this.servicesService.services);
+
+  deleteService(id: number): void {
+    // Implement delete service logic
+    this.modalService.confirm('Are you sure you want to delete this service?').then(() => {
+      this.servicesService.deleteService(id).subscribe(()=>{this.fetchServicesAndInitializeTable()});
+    }).catch(() => {});
+
   }
 }

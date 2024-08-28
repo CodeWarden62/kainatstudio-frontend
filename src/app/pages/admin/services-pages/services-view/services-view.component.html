@@ -1,77 +1,50 @@
-<div class="content">
-  <div class="heading-area">
-    <div class="heading">Services</div>
-    <div class="sub-heading">All types of services offered by Kainaat Studio</div>
-  </div>
-  <br>
-  <br>
-  <a mat-flat-button routerLinkActive="active" routerLink="./new">
-    <mat-icon>plus</mat-icon>
-    <span>Add New Service</span>
-  </a>
+<h2>Services</h2>
+<div class="button-area">
+    <button mat-raised-button color="primary" [routerLink]="['./new']">Add Service</button>
+</div>
+<div class="table-area">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z1">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let service"> {{service.Id}} </td>
+        </ng-container>
 
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let service"> {{service.Name}} </td>
+        </ng-container>
 
+        <!-- Price Range Column -->
+        <ng-container matColumnDef="priceRange">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Price Range </th>
+            <td mat-cell *matCellDef="let service"> {{service.MinPrice}} - {{service.MaxPrice}} </td>
+        </ng-container>
 
-  <table mat-table matSort [dataSource]="dataSource" class="mat-elevation-z1">
-    <!-- Name Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.Name}}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-      <td mat-cell *matCellDef="let service">{{ service.Id}}</td>
-    </ng-container>
+        <!-- Sort Order Column -->
+        <ng-container matColumnDef="sortOrder">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Sort Order </th>
+            <td mat-cell *matCellDef="let service"> {{service.SortOrder}} </td>
+        </ng-container>
 
-    <!-- Description Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.Description}}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let service">{{ service.Description}}</td>
-    </ng-container>
+        <!-- Edit Button Column -->
+        <ng-container matColumnDef="edit">
+            <th mat-header-cell *matHeaderCellDef> Edit </th>
+            <td mat-cell *matCellDef="let service">
+                <button mat-button color="accent" (click)="editService(service.Id)">Edit</button>
+            </td>
+        </ng-container>
 
-    <!-- Price Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.PriceRange}}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Price Range</th>
-      <td mat-cell *matCellDef="let service">Rs.{{service.MinPrice}}-{{
-        service.MaxPrice}} </td>
-    </ng-container>
+        <!-- Delete Button Column -->
+        <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef> Delete </th>
+            <td mat-cell *matCellDef="let service">
+                <button mat-button color="warn" (click)="deleteService(service.Id)">Delete</button>
+            </td>
+        </ng-container>
 
-    <!-- SortOrder Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.SortOrder}}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Sort Order</th>
-      <td mat-cell *matCellDef="let service">{{ service.SortOrder}}</td>
-    </ng-container>
-
-    <!-- Active Flag -->
-    <ng-container matColumnDef="{{ServiceTableColumns.ActiveFlag}}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
-      <td mat-cell *matCellDef="let service">
-        <mat-slide-toggle [checked]="service.ActiveFlag" disabled></mat-slide-toggle>
-      </td>
-    </ng-container>
-
-
-    <!-- Edit Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.Edit}}">
-      <th mat-header-cell *matHeaderCellDef>Edit</th>
-      <td mat-cell *matCellDef="let service;dataSource:dataSource">
-        <a mat-icon-button color="primary" aria-label="Edit" [routerLink]="['./edit', service.Id]">
-          <mat-icon>edit</mat-icon>
-        </a>
-      </td>
-    </ng-container>
-
-    <!-- Delete Column -->
-    <ng-container matColumnDef="{{ServiceTableColumns.Delete}}">
-      <th mat-header-cell *matHeaderCellDef>Delete</th>
-      <td mat-cell *matCellDef="let service">
-        <button (click)="handleDelete(service.id)" mat-icon-button color="warn" aria-label="Delete">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-
-    <!-- Table Rows -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let service; columns: displayedColumns;"></tr>
-  </table>
-  <mat-paginator class="mat-elevation-z1" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 </div>

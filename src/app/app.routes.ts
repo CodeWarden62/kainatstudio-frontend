@@ -11,11 +11,11 @@ export const routes: Routes = [
     path: 'login',
     component: LoginComponent
   },
-  { path: '404-not-found',
-   component:NotFoundComponent
-  },
-  {
-    path:"**",
-    redirectTo: '404-not-found'
-  }
+  // { path: '404-not-found',
+  //  component:NotFoundComponent
+  // },
+  // {
+  //   path:"**",
+  //   redirectTo: '404-not-found'
+  // }
 ];

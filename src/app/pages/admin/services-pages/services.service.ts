@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { IServiceModel, dummyServices } from './services.model';
 import { WebapiService } from '../../../services/webapi.service';
 import { ApiConstants } from '../../../constants/api.constants';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, map, tap } from 'rxjs';
+import { ToastService } from '../../../services/toast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class ServicesService {
   services: IServiceModel[] = [];
   constructor(
     private webapi: WebapiService,
-    private matSnackBar: MatSnackBar
+    private toastService: ToastService,
   ) {}
 
   getServices() {
@@ -22,11 +22,7 @@ export class ServicesService {
         return this.services;
       }),
       catchError((err) => {
-        this.matSnackBar.open(
-          'Error fetching services, please try again later',
-          'Close',
-          { duration: 3000 }
-        );
+        this.toastService.presentError('Error fetching services, please try again later');
         throw err;
       })
     );
@@ -38,7 +34,7 @@ export class ServicesService {
     return this.webapi.post(ApiConstants.service.basePath+ApiConstants.service.operations.create, service, true)
     .pipe(
       catchError(err => {
-        this.matSnackBar.open('Error adding service, please try again later', 'Close', {duration: 3000});
+        this.toastService.presentError('Error fetching services, please try again later');
         throw err
       }),
       tap((res: any) => {
@@ -52,8 +48,9 @@ export class ServicesService {
     return this.webapi.update(ApiConstants.service.basePath+ApiConstants.service.operations.update, service, true)
     .pipe(
       catchError(err => {
-        this.matSnackBar.open('Error updating service, please try again later', 'Close', {duration: 3000});
-        throw err
+
+        this.toastService.presentError('Error fetching services, please try again later');
+         throw err
       }),
       tap(() => {
         const index = this.services.findIndex((s) => s.Id === service.Id);
@@ -63,7 +60,18 @@ export class ServicesService {
   }
 
   deleteService(serviceId: number) {
-    this.services = this.services.filter((s) => s.Id !== serviceId);
+    return this.webapi.delete(ApiConstants.service.basePath+ApiConstants.service.operations.delete, serviceId, true)
+    .pipe(
+      catchError(err => {
+        this.toastService.presentError('Error fetching services, please try again later');
+        throw err
+      }),
+      map(() => {
+        const index = this.services.findIndex((s) => s.Id === serviceId);
+        this.services.splice(index, 1);
+        return this.services;
+      })
+    );
   }
 
   serviceApiModelToServiceModel(serviceApiModel: any): IServiceModel[] {

@@ -1,48 +1,50 @@
-<h2>{{heading}}</h2>
-
-<form [formGroup]="serviceForm"  (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="outline">
+<h2>{{isEdit ? 'Edit' : 'Add new'}} Service</h2>
+  <form [formGroup]="serviceForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
       <mat-label>Name</mat-label>
-    <input placeholder="Name" matInput [formControlName]="ServicePropNames.Name" type="text">
-  </mat-form-field>
+      <input matInput id="name" formControlName="Name" />
+      <mat-error *ngIf="serviceForm.get('Name')?.invalid && serviceForm.get('Name')?.touched">
+        Name is required.
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Description</mat-label>
-    <textarea   cdkTextareaAutosize
-     matInput [formControlName]="ServicePropNames.Description" type="text"></textarea>
-  </mat-form-field>
-  <div class="field-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Thumbnail</mat-label>
+      <input matInput id="thumbnail" formControlName="Thumbnail" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Min Price</mat-label>
-    <input matInput min="1" max="99999999999999"  [formControlName]="ServicePropNames.MinPrice" type="number">
-  </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea matInput id="description" formControlName="Description"></textarea>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Max Price</mat-label>
-    <input matInput min="1" max="99999999999999"   [formControlName]="ServicePropNames.MaxPrice" type="number">
-  </mat-form-field>
-</div>
+    <mat-form-field appearance="fill">
+      <mat-label>Min Price</mat-label>
+      <input matInput type="number" id="minPrice" formControlName="MinPrice" />
+      <mat-error *ngIf="serviceForm.get('MinPrice')?.invalid && serviceForm.get('MinPrice')?.touched">
+        Min Price is required and must be a positive number.
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Status</mat-label>
-    <mat-select  [formControlName]="ServicePropNames.ActiveFlag">
-      <mat-option [value]="true">Active</mat-option>
-      <mat-option [value]="false">Inactive</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Max Price</mat-label>
+      <input matInput type="number" id="maxPrice" formControlName="MaxPrice" />
+      <mat-error *ngIf="serviceForm.get('MaxPrice')?.invalid && serviceForm.get('MaxPrice')?.touched">
+        Max Price is required and must be a positive number.
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Thumbnail URL</mat-label>
-    <input matInput  [formControlName]="ServicePropNames.Thumbnail" type="url">
-  </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Sort Order</mat-label>
+      <input matInput type="number" id="sortOrder" formControlName="SortOrder" />
+      <mat-error *ngIf="serviceForm.get('SortOrder')?.invalid && serviceForm.get('SortOrder')?.touched">
+        Sort Order is required.
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Sort Order</mat-label>
-    <input matInput  [formControlName]="ServicePropNames.SortOrder" [min]="0" [max]="9999" type="number">
-  </mat-form-field>
+    <mat-checkbox id="activeFlag" formControlName="ActiveFlag">Active</mat-checkbox>
 
-  <button mat-flat-button color="primary" type="submit">Submit</button>
-
-</form>
-
+    <button mat-raised-button color="primary" type="submit" [disabled]="serviceForm.invalid">
+      {{isEdit ? 'Update' : 'Add'}} Service
+    </button>
+  </form>
