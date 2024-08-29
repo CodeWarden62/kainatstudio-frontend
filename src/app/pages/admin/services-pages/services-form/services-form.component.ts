@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-services-form',
@@ -17,7 +18,9 @@ import { MatInputModule } from '@angular/material/input';
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatCardModule,],
+    MatCardModule,
+    CommonModule
+  ],
   templateUrl: './services-form.component.html',
   styleUrl: './services-form.component.scss'
 })
